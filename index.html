@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLL111 Interactive Study Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Earthy Scholar Palette -->
+    <!-- Application Structure Plan: A task-oriented SPA with a sidebar for navigation (Dashboard, Syllabus, Exams, Problem Solver, Tutorials, Resources). This structure is chosen over a linear report format to empower students to explore content based on their immediate study needs, fostering non-linear, self-directed learning. Interactive elements within each section are designed to make complex information more digestible and engaging. -->
+    <!-- Visualization & Content Choices: 
+    - Report Info: Exam question type distribution. Goal: Compare. Viz: Bar Chart (Chart.js). Interaction: Tooltips for exact percentages. Justification: A bar chart is the clearest way to compare the weightage of the three distinct categories.
+    - Report Info: 7-step problem-solving algorithm. Goal: Organize/Inform. Viz: HTML/CSS Process Flow Diagram. Interaction: Clickable steps to reveal details. Justification: A visual flow is more intuitive and memorable than a simple numbered list for a process.
+    - Report Info: Syllabus modules & Tutorial Solutions. Goal: Organize. Viz: HTML/CSS Accordion. Interaction: Click to expand/collapse. Justification: An accordion presents a high-level overview while keeping the UI clean, allowing users to drill down into specific topics without being overwhelmed.
+    - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF6;
+            color: #4A4A4A;
+        }
+        .nav-item {
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-item.active {
+            background-color: #E3DED8;
+            color: #3D3D3D;
+            font-weight: 600;
+        }
+        .nav-item:not(.active):hover {
+            background-color: #F0EBE5;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .accordion-content, .solution-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .step-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .tutorial-toggle-btn.active {
+            background-color: #7D6B58;
+            color: white;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <aside class="w-full md:w-64 bg-[#F5F1EB] p-4 md:p-6 border-r border-gray-200/50 flex-shrink-0">
+            <h1 class="text-2xl font-bold text-[#6B5B4B] mb-8">CLL111 Study Guide</h1>
+            <nav id="main-nav" class="space-y-2">
+                <a href="#dashboard" class="nav-item flex items-center p-3 rounded-lg" data-section="dashboard">
+                    <span class="mr-3">📊</span> Dashboard
+                </a>
+                <a href="#syllabus" class="nav-item flex items-center p-3 rounded-lg" data-section="syllabus">
+                    <span class="mr-3">📚</span> Syllabus Explorer
+                </a>
+                <a href="#exams" class="nav-item flex items-center p-3 rounded-lg" data-section="exams">
+                    <span class="mr-3">📝</span> Exam Deconstructor
+                </a>
+                <a href="#solver" class="nav-item flex items-center p-3 rounded-lg" data-section="solver">
+                    <span class="mr-3">⚙️</span> Problem Solver
+                </a>
+                <a href="#tutorials" class="nav-item flex items-center p-3 rounded-lg" data-section="tutorials">
+                    <span class="mr-3">🧑‍🏫</span> Tutorial Solutions
+                </a>
+                <a href="#resources" class="nav-item flex items-center p-3 rounded-lg" data-section="resources">
+                    <span class="mr-3">📖</span> Resource Hub
+                </a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+            
+            <section id="dashboard" class="content-section">
+                <h2 class="text-3xl font-bold text-[#7D6B58] mb-2">Course Dashboard</h2>
+                <p class="mb-8 text-lg text-gray-600">A high-level overview of CLL111: Material and Energy Balances.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200/60">
+                        <h3 class="font-bold text-xl text-[#8A7968] mb-2">5 Core Modules</h3>
+                        <p class="text-gray-600">The course is built on five scaffolded modules, from fundamentals to complex energy balances.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200/60">
+                        <h3 class="font-bold text-xl text-[#8A7968] mb-2">3 Key Textbooks</h3>
+                        <p class="text-gray-600">Mastery requires deep engagement with the recommended texts by Felder, Himmelblau, and Bhatt.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200/60">
+                        <h3 class="font-bold text-xl text-[#8A7968] mb-2">3 Exam Archetypes</h3>
+                        <p class="text-gray-600">Questions test foundational skills, single concepts, and integrated process analysis.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200/60">
+                    <h3 class="text-2xl font-bold text-center text-[#7D6B58] mb-4">Typical Major Exam Mark Distribution</h3>
+                    <p class="text-center text-gray-600 mb-6">Exams are designed to test a mix of skills. The most weight is given to complex, integrated problems that require synthesizing knowledge from multiple modules.</p>
+                    <div class="chart-container">
+                        <canvas id="examArchetypeChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section id="syllabus" class="content-section">
+                <h2 class="text-3xl font-bold text-[#7D6B58] mb-2">Syllabus Explorer</h2>
+                <p class="mb-8 text-lg text-gray-600">This course is a logical progression from fundamental principles to complex, integrated process analysis. Each module builds upon the last, making sequential mastery essential for success.</p>
+                <div id="accordion-container" class="space-y-4"></div>
+            </section>
+
+            <section id="exams" class="content-section">
+                <h2 class="text-3xl font-bold text-[#7D6B58] mb-2">Exam Deconstructor</h2>
+                <p class="mb-8 text-lg text-gray-600">Understand the structure, difficulty, and types of questions you'll face in the Minor and Major exams. The key to success is not just knowing the content, but knowing how it will be tested.</p>
+                
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200/60 mb-8">
+                    <h3 class="text-xl font-bold text-[#8A7968] mb-4">Exam Format at a Glance</h3>
+                    <div class="flex justify-center mb-6">
+                        <div class="inline-flex rounded-lg shadow-sm">
+                            <button id="btn-minor" class="exam-toggle-btn bg-[#E3DED8] text-[#3D3D3D] font-semibold py-2 px-4 rounded-l-lg">Minor Exam</button>
+                            <button id="btn-major" class="exam-toggle-btn bg-white py-2 px-4 rounded-r-lg">Major Exam</button>
+                        </div>
+                    </div>
+                    <div id="exam-details"></div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200/60">
+                    <h3 class="text-xl font-bold text-[#8A7968] mb-4">Question Archetype Gallery</h3>
+                    <p class="mb-6 text-gray-600">Exam questions fall into three categories. Recognizing them helps you allocate your time and effort effectively during the exam.</p>
+                    <div id="question-gallery" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
+            </section>
+
+            <section id="solver" class="content-section">
+                <h2 class="text-3xl font-bold text-[#7D6B58] mb-2">The Universal Problem-Solving Algorithm</h2>
+                <p class="mb-8 text-lg text-gray-600">Success in this course comes from disciplined, systematic problem-solving. Internalize this 7-step process to transform complex problems into manageable tasks and maximize your score.</p>
+                <div id="solver-steps" class="space-y-4"></div>
+            </section>
+            
+            <section id="tutorials" class="content-section">
+                <h2 class="text-3xl font-bold text-[#7D6B58] mb-2">Tutorial Solutions</h2>
+                <p class="mb-8 text-lg text-gray-600">Work through the official tutorial problems with detailed, annotated solutions. These problems are designed to build mastery of the fundamental concepts tested in exams.</p>
+                <div class="mb-6">
+                    <div id="tutorial-toggles" class="inline-flex rounded-lg shadow-sm">
+                        <button class="tutorial-toggle-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-l-lg" data-tut="1">Tutorial 1</button>
+                        <button class="tutorial-toggle-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-r-lg" data-tut="2">Tutorial 2</button>
+                    </div>
+                </div>
+                <div id="tutorial-content" class="space-y-4"></div>
+            </section>
+
+            <section id="resources" class="content-section">
+                <h2 class="text-3xl font-bold text-[#7D6B58] mb-2">Resource Hub</h2>
+                <p class="mb-8 text-lg text-gray-600">The lecture notes are a skeleton. True mastery comes from the detailed explanations and vast problem libraries in the recommended textbooks. They are not supplementary; they are essential.</p>
+                
+                <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-r-lg mb-8" role="alert">
+                  <p class="font-bold">Key Insight</p>
+                  <p>A significant number of tutorial and exam questions are direct reproductions or slight modifications of problems from these textbooks. Mastering them is the most direct path to exam success.</p>
+                </div>
+
+                <div id="resource-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </section>
+
+        </main>
+    </div>
+
+<script>
+const AppData = {
+    syllabus: [
+        {
+            title: "Module 1: The Language of Chemical Engineering",
+            icon: "⚖️",
+            topics: "Units & Dimensions, Systems of Units, Dimensional Consistency, Moles, Composition, Pressure.",
+            concepts: "Principle of Dimensional Homogeneity, Force conversion (g vs. gc).",
+            archetypes: "Direct unit conversions, converting empirical equations (e.g., Antoine), manometer problems."
+        },
+        {
+            title: "Module 2: Material Balances on Non-Reactive Systems",
+            icon: "📦",
+            topics: "Process Classification, General Balance Equation, Flowcharts, Degree-of-Freedom Analysis.",
+            concepts: "In = Out (at steady state), DOF = Unknowns - Equations.",
+            archetypes: "Solving for unknown flows in multi-unit processes (mixers, separators), non-reactive recycle/bypass loops."
+        },
+        {
+            title: "Module 3: Material Balances on Reactive Systems",
+            icon: "🔥",
+            topics: "Stoichiometry, Limiting & Excess Reactants, Conversion, Extent of Reaction, Combustion.",
+            concepts: "% Excess Air, Overall vs. Single-Pass Conversion.",
+            archetypes: "Combustion analysis (theoretical air, flue gas), complex reactor systems with recycle and purge streams."
+        },
+        {
+            title: "Module 4: Single and Multiphase Systems",
+            icon: "💧",
+            topics: "Ideal/Non-Ideal Gases, Phase Equilibria, Vapor Pressure, Humidity & Saturation.",
+            concepts: "Ideal Gas Law (PV=nRT), Raoult's Law, Antoine Equation.",
+            archetypes: "Gas law applications, humidity and cooling tower calculations."
+        },
+        {
+            title: "Module 5: Energy Balances",
+            icon: "⚡️",
+            topics: "Forms of Energy, Enthalpy, Heat Capacity, Heats of Reaction/Formation/Combustion.",
+            concepts: "Open System Energy Balance (ΔH + ΔEk + ΔEp = Q - Ws), Hess's Law.",
+            archetypes: "Sensible/latent heat calculations, finding heat of reaction at non-standard temperatures, integrated material & energy balances."
+        }
+    ],
+    exams: {
+        minor: {
+            title: "Minor Exam",
+            details: "A 1-hour, 30-mark high-pressure test. It focuses almost exclusively on **Material Balances for Reactive Systems** (Module 3), including complex recycle and purge streams. Your performance here is a key indicator of your readiness for the rest of the course."
+        },
+        major: {
+            title: "Major Exam",
+            details: "A 2-hour, 45-50 mark comprehensive assessment. It features a mix of questions spanning the **entire syllabus**, from fundamental unit conversions to the most complex, integrated material and energy balance problems. Expect to synthesize knowledge from all five modules."
+        },
+        archetypes: [
+            {
+                name: "Foundational Skill Checks",
+                weight: "10-25%",
+                description: "Direct, non-contextual questions testing mastery of fundamental tools. These are the most straightforward marks to secure.",
+                example: "Convert 70 Btu/h.ft².°F to cal/s.cm².°C."
+            },
+            {
+                name: "Single-Concept Application",
+                weight: "30-40%",
+                description: "Applying one major concept to a well-defined process scenario. Tests your ability to translate theory into practice.",
+                example: "A material balance on a non-reactive, multi-unit separation process involving an evaporator and crystallizer with recycle."
+            },
+            {
+                name: "Integrated Process Analysis",
+                weight: "40-50%",
+                description: "The capstone problems. These are the most challenging and carry the highest weight, requiring synthesis of multiple topics.",
+                example: "The methanol synthesis problem, involving a full system with a reactor, condenser, recycle, and purge stream."
+            }
+        ]
+    },
+    solver: [
+        { step: 1, title: "Read and Understand", description: "Carefully deconstruct the problem statement. Translate the narrative into a clear objective. What are you being asked to find?" },
+        { step: 2, title: "Draw and Label Flowchart", description: "This is the most critical step. Convert the text into a visual block diagram. Label all streams with knowns (flows, compositions) and assign variables to all unknowns." },
+        { step: 3, title: "Choose a Basis", description: "If no flow rates are given, assume one to start. A convenient basis is often 100 kg or 100 kmol of a feed stream, or 1 hour of operation." },
+        { step: 4, title: "Degree-of-Freedom (DOF) Analysis", description: "A formal check to ensure the problem is solvable. DOF = (Unknown variables) - (Independent equations). If DOF is not zero, you have either too little or too much information." },
+        { step: 5, title: "Write the Equations", description: "Systematically write down all independent equations (material balances, process specs, physical laws) in symbolic form first before substituting numbers." },
+        { step: 6, title: "Solve", description: "Once the system of equations is established, substitute known values and solve for the unknowns. Check your algebra carefully." },
+        { step: 7, title: "Check and State Answer", description: "Does the result make physical sense (e.g., mass fractions between 0 and 1)? State the final answer clearly with the correct units and significant figures." }
+    ],
+    resources: [
+        {
+            title: "Elementary Principles of Chemical Processes",
+            author: "Felder & Rousseau",
+            description: "The international gold standard. Praised for its clear, step-by-step problem-solving pedagogy and focus on Degree-of-Freedom analysis.",
+            tag: "The Gold Standard"
+        },
+        {
+            title: "Basic Principles and Calculations in Chemical Engineering",
+            author: "Himmelblau & Riggs",
+            description: "Renowned for its rigor and the sheer volume of complex practice problems. An excellent resource for challenging yourself.",
+            tag: "For Rigorous Practice"
+        },
+        {
+            title: "Stoichiometry",
+            author: "Bhatt & Vora",
+            description: "A classic Indian textbook with a strong, focused treatment of material balances. An outstanding source for additional, relevant practice problems.",
+            tag: "Classic Indian Text"
+        }
+    ],
+    tutorials: {
+        "1": [
+            {
+                problemNumber: 1,
+                problemText: "Make following conversions:<br>(a) Wavelength 5500 A⁰ to nm.<br>(b) 175 grain moisture/lb dry air to g moisture/kg dry air.",
+                objective: "To perform direct unit conversions involving length and a compound mass ratio unit.",
+                principles: "Application of standard conversion factors.",
+                solution: "(a) (5500 A⁰) x (1 m / 10¹⁰ A⁰) x (10⁹ nm / 1 m) = 550 nm<br>(b) (175 grain/lb) x (1 lb / 7000 grain) x (1000 g / 1 kg) x (2.2046 lb / 1 kg) = 25.0 g/kg",
+                profNotes: "Part (b) tests the ability to handle compound units. It is essential to label the substance (e.g., 'grain moisture', 'lb dry air') to avoid confusion."
+            },
+            {
+                problemNumber: 2,
+                problemText: "In a double effect evaporator plant, the second effect is maintained under vacuum of 475 torr (mm Hg). Find the absolute pressure in kPa.",
+                objective: "To convert a vacuum pressure to an absolute pressure.",
+                principles: "Absolute Pressure = Atmospheric Pressure - Vacuum Pressure. Standard atmospheric pressure is 760 torr or 101.325 kPa.",
+                solution: "P_abs = P_atm - P_vacuum = 101.325 kPa - (475 torr * (101.325 kPa / 760 torr)) = 101.325 - 63.328 = 38.0 kPa",
+                profNotes: "The term 'vacuum' refers to a pressure *below* atmospheric pressure. The calculation is therefore a subtraction from the standard atmospheric pressure."
+            },
+            {
+                problemNumber: 3,
+                problemText: "A force equal to 192.6 kgf is applied on a piston with a diameter of 5 cm. Find the pressure exerted on the piston in kPa, bar and psi.",
+                objective: "To calculate pressure from force and area and express it in multiple units.",
+                principles: "Pressure = Force / Area. Conversion between kgf (kilogram-force) and Newtons.",
+                solution: "1. Force = 192.6 kgf * 9.80665 N/kgf = 1888.7 N<br>2. Area = π * (0.025 m)² = 0.0019635 m²<br>3. Pressure = 1888.7 N / 0.0019635 m² = 961.9 kPa<br>4. P(bar) = 9.62 bar, P(psi) = 139.5 psi",
+                profNotes: "The distinction between mass (kg) and force (kgf) is critical. The unit 'kgf' must be converted to the SI unit of force, the Newton."
+            },
+            {
+                problemNumber: 8,
+                problemText: "The Antoine Equation for benzene is Log₁₀P = 6.9057 - 1211.0 / (T + 220.80), where P is in torr and T is in °C. Convert the equation to use SI Units (P in Pa, T in K).",
+                objective: "To convert an empirical equation from one set of units to another.",
+                principles: "Dimensional analysis and substitution. Arguments of logarithms change when units change.",
+                solution: "1. Define P* in Pa, T* in K. P = P*/133.322, T = T* - 273.15<br>2. Substitute: Log₁₀(P*/133.322) = 6.9057 - 1211.0 / ((T* - 273.15) + 220.80)<br>3. Simplify: Log₁₀(P*) - Log₁₀(133.322) = 6.9057 - 1211.0 / (T* - 52.35)<br>4. Final Eq: Log₁₀(P*) = 9.0306 - 1211.0 / (T* - 52.35)",
+                profNotes: "Empirical constants (like 6.9057) are not dimensionless; they have units that make the equation consistent. Changing variable units requires re-calculating the constants."
+            }
+        ],
+        "2": []
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const navLinks = document.querySelectorAll('.nav-item');
+    const contentSections = document.querySelectorAll('.content-section');
+    const mainNav = document.getElementById('main-nav');
+
+    const setActiveTab = (hash) => {
+        const targetHash = hash || '#dashboard';
+        const targetSectionId = targetHash.substring(1);
+
+        navLinks.forEach(link => {
+            if (link.getAttribute('href') === targetHash) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+
+        contentSections.forEach(section => {
+            if (section.id === targetSectionId) {
+                section.classList.add('active');
+            } else {
+                section.classList.remove('active');
+            }
+        });
+    };
+
+    mainNav.addEventListener('click', (e) => {
+        const link = e.target.closest('a');
+        if (!link) return;
+        e.preventDefault();
+        const hash = link.getAttribute('href');
+        window.location.hash = hash;
+        setActiveTab(hash);
+    });
+
+    const renderDashboard = () => {
+        const ctx = document.getElementById('examArchetypeChart').getContext('2d');
+        const chartData = AppData.exams.archetypes.map(a => parseFloat(a.weight.split('-')[1]));
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: AppData.exams.archetypes.map(a => a.name),
+                datasets: [{
+                    label: 'Max Weightage (%)',
+                    data: chartData,
+                    backgroundColor: [
+                        'rgba(172, 154, 135, 0.6)',
+                        'rgba(125, 107, 88, 0.6)',
+                        'rgba(107, 91, 75, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(172, 154, 135, 1)',
+                        'rgba(125, 107, 88, 1)',
+                        'rgba(107, 91, 75, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.x !== null) {
+                                    const range = AppData.exams.archetypes[context.dataIndex].weight;
+                                    label += `${range}`;
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 50,
+                        title: {
+                            display: true,
+                            text: 'Percentage of Total Marks'
+                        }
+                    }
+                }
+            }
+        });
+    };
+
+    const renderSyllabus = () => {
+        const container = document.getElementById('accordion-container');
+        container.innerHTML = AppData.syllabus.map((module, index) => `
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200/60 overflow-hidden">
+                <button class="accordion-toggle w-full flex justify-between items-center p-5 text-left font-semibold text-lg text-[#6B5B4B]">
+                    <span class="flex items-center"><span class="text-2xl mr-4">${module.icon}</span> ${module.title}</span>
+                    <span class="accordion-icon text-2xl transform transition-transform duration-300">-</span>
+                </button>
+                <div class="accordion-content px-5 pb-5">
+                    <div class="pt-4 border-t border-gray-200">
+                        <p class="mb-2"><strong class="font-semibold text-gray-700">Core Topics:</strong> ${module.topics}</p>
+                        <p class="mb-2"><strong class="font-semibold text-gray-700">Key Concepts:</strong> ${module.concepts}</p>
+                        <p><strong class="font-semibold text-gray-700">Problem Archetypes:</strong> ${module.archetypes}</p>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        container.addEventListener('click', (e) => {
+            const toggle = e.target.closest('.accordion-toggle');
+            if (toggle) {
+                const content = toggle.nextElementSibling;
+                const icon = toggle.querySelector('.accordion-icon');
+                const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
+
+                document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = '0px');
+                document.querySelectorAll('.accordion-icon').forEach(i => i.textContent = '+');
+                
+                if (!isOpen) {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    icon.textContent = '-';
+                }
+            }
+        });
+        
+        const firstToggle = container.querySelector('.accordion-toggle');
+        if(firstToggle) firstToggle.click();
+
+    };
+
+    const renderExams = () => {
+        const detailsContainer = document.getElementById('exam-details');
+        const galleryContainer = document.getElementById('question-gallery');
+        const btnMinor = document.getElementById('btn-minor');
+        const btnMajor = document.getElementById('btn-major');
+
+        const showExamDetails = (type) => {
+            const exam = AppData.exams[type];
+            detailsContainer.innerHTML = `<p class="text-center text-gray-700 max-w-2xl mx-auto">${exam.details}</p>`;
+            if (type === 'minor') {
+                btnMinor.classList.add('bg-[#E3DED8]', 'text-[#3D3D3D]', 'font-semibold');
+                btnMinor.classList.remove('bg-white');
+                btnMajor.classList.add('bg-white');
+                btnMajor.classList.remove('bg-[#E3DED8]', 'text-[#3D3D3D]', 'font-semibold');
+            } else {
+                btnMajor.classList.add('bg-[#E3DED8]', 'text-[#3D3D3D]', 'font-semibold');
+                btnMajor.classList.remove('bg-white');
+                btnMinor.classList.add('bg-white');
+                btnMinor.classList.remove('bg-[#E3DED8]', 'text-[#3D3D3D]', 'font-semibold');
+            }
+        };
+
+        btnMinor.addEventListener('click', () => showExamDetails('minor'));
+        btnMajor.addEventListener('click', () => showExamDetails('major'));
+
+        galleryContainer.innerHTML = AppData.exams.archetypes.map(archetype => `
+            <div class="bg-gray-50 p-6 rounded-lg border border-gray-200/80">
+                <h4 class="font-bold text-lg text-[#6B5B4B]">${archetype.name}</h4>
+                <p class="font-semibold text-gray-500 mb-2">${archetype.weight} of marks</p>
+                <p class="text-gray-600 mb-4">${archetype.description}</p>
+                <div class="bg-white border border-dashed border-gray-300 p-3 rounded-md text-sm text-gray-700">
+                    <p class="font-medium">Example:</p>
+                    <p>${archetype.example}</p>
+                </div>
+            </div>
+        `).join('');
+
+        showExamDetails('minor');
+    };
+
+    const renderSolver = () => {
+        const container = document.getElementById('solver-steps');
+        container.innerHTML = AppData.solver.map((step, index) => `
+            <div class="flex items-center w-full">
+                <div class="step-card bg-white p-5 rounded-xl shadow-sm border border-gray-200/60 cursor-pointer transition-all duration-300 w-full">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <div class="flex items-center justify-center w-10 h-10 rounded-full bg-[#E3DED8] text-[#6B5B4B] font-bold text-lg mr-4 flex-shrink-0">${step.step}</div>
+                            <h3 class="font-bold text-xl text-[#8A7968]">${step.title}</h3>
+                        </div>
+                        <span class="text-2xl text-gray-400">+</span>
+                    </div>
+                    <div class="step-details max-h-0 overflow-hidden transition-all duration-500 ease-in-out mt-0">
+                        <p class="text-gray-600 pt-4 border-t border-gray-200">${step.description}</p>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        container.addEventListener('click', e => {
+            const card = e.target.closest('.step-card');
+            if (card) {
+                const details = card.querySelector('.step-details');
+                const icon = card.querySelector('.text-2xl');
+                const isOpen = details.style.maxHeight && details.style.maxHeight !== '0px';
+
+                if (isOpen) {
+                    details.style.maxHeight = '0px';
+                    details.style.marginTop = '0';
+                    icon.style.transform = 'rotate(0deg)';
+                } else {
+                    details.style.maxHeight = details.scrollHeight + 'px';
+                    details.style.marginTop = '1rem';
+                    icon.style.transform = 'rotate(45deg)';
+                }
+            }
+        });
+    };
+    
+    const renderTutorials = () => {
+        const contentContainer = document.getElementById('tutorial-content');
+        const toggleContainer = document.getElementById('tutorial-toggles');
+
+        const displayTutorial = (tutNumber) => {
+            const problems = AppData.tutorials[tutNumber];
+            
+            toggleContainer.querySelectorAll('.tutorial-toggle-btn').forEach(btn => {
+                if (btn.dataset.tut === tutNumber) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            if (!problems || problems.length === 0) {
+                contentContainer.innerHTML = `<div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200/60 text-center text-gray-500">Solutions for Tutorial ${tutNumber} are not yet available.</div>`;
+                return;
+            }
+
+            contentContainer.innerHTML = problems.map(p => `
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200/60 overflow-hidden">
+                    <button class="solution-toggle w-full flex justify-between items-center p-5 text-left">
+                        <span class="font-semibold text-lg text-[#6B5B4B]">Problem ${p.problemNumber}: <span class="font-normal">${p.problemText}</span></span>
+                        <span class="solution-icon text-2xl text-gray-400 transform transition-transform duration-300">+</span>
+                    </button>
+                    <div class="solution-content px-5 pb-5">
+                        <div class="pt-4 border-t border-gray-200 space-y-3">
+                            <div><strong class="font-semibold text-gray-700 block">Objective:</strong> ${p.objective}</div>
+                            <div><strong class="font-semibold text-gray-700 block">Underlying Principles:</strong> ${p.principles}</div>
+                            <div class="bg-gray-50 p-3 rounded-lg"><strong class="font-semibold text-gray-700 block">Systematic Solution:</strong> <code class="text-sm">${p.solution}</code></div>
+                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3"><strong class="font-semibold text-yellow-800 block">Professor's Notes:</strong> <span class="text-yellow-700">${p.profNotes}</span></div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        contentContainer.addEventListener('click', (e) => {
+            const toggle = e.target.closest('.solution-toggle');
+            if (toggle) {
+                const content = toggle.nextElementSibling;
+                const icon = toggle.querySelector('.solution-icon');
+                const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
+                
+                if (isOpen) {
+                    content.style.maxHeight = '0px';
+                    icon.style.transform = 'rotate(0deg)';
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    icon.style.transform = 'rotate(45deg)';
+                }
+            }
+        });
+
+        toggleContainer.addEventListener('click', (e) => {
+            const button = e.target.closest('.tutorial-toggle-btn');
+            if (button) {
+                displayTutorial(button.dataset.tut);
+            }
+        });
+
+        displayTutorial("1");
+    };
+
+    const renderResources = () => {
+        const container = document.getElementById('resource-cards');
+        container.innerHTML = AppData.resources.map(resource => `
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200/60 flex flex-col">
+                <span class="inline-block bg-[#E3DED8] text-[#6B5B4B] px-3 py-1 rounded-full text-sm font-semibold mb-3 self-start">${resource.tag}</span>
+                <h4 class="font-bold text-xl text-[#6B5B4B] mb-1">${resource.title}</h4>
+                <p class="text-gray-500 mb-3 font-medium">${resource.author}</p>
+                <p class="text-gray-600 flex-grow">${resource.description}</p>
+            </div>
+        `).join('');
+    };
+
+    renderDashboard();
+    renderSyllabus();
+    renderExams();
+    renderSolver();
+    renderTutorials();
+    renderResources();
+
+    setActiveTab(window.location.hash);
+});
+</script>
+</body>
+</html>
